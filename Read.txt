@@ -1,0 +1,4 @@
+Main colors that i would use:
+    #3c3b3b
+    #5541d8
+    #ffffff
