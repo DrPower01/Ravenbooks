@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2024-10-30" view-index="0" gantt-divider-location="344" resource-divider-location="300" version="3.3.3312" locale="en_AE">
+    <description/>
+    <view zooming-state="default:2" id="gantt-chart">
+        <field id="tpd3" name="Name" width="195" order="0"/>
+        <field id="tpd4" name="Begin date" width="74" order="1"/>
+        <field id="tpd5" name="End date" width="74" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="210" order="0"/>
+        <field id="1" name="Default role" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" uid="0d846e606238475ba2e01747a8a1bae2" name="Choix du thème et de groupe" meeting="false" start="2024-09-23" duration="3" complete="0" expand="true">
+            <depend id="1" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="1" uid="9c47f88b21544773ad86d05c4c3c9055" name="Validation du projet" meeting="false" start="2024-09-26" duration="1" complete="0" expand="true">
+            <depend id="2" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="2" uid="1a57a13ab50f4f6191142858dbe889b7" name="Création d’un aperçu du projet" meeting="false" start="2024-09-27" duration="2" complete="0" expand="true">
+            <depend id="3" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="3" uid="e791e313751749b7b7a576ff30fcb5d4" name="Rédaction des objectifs et des besoins" meeting="false" start="2024-10-01" duration="4" complete="0" expand="true">
+            <depend id="4" type="2" difference="0" hardness="Strong"/>
+            <depend id="5" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="4" uid="fba0f4a659f74b41bcb4485334380033" name="Récolte des ISBN" meeting="false" start="2024-10-07" duration="30" complete="0" expand="true"/>
+        <task id="5" uid="f4fa2194fe694350a59b1d338d564db2" name="Création de la base de données" meeting="false" start="2024-10-07" duration="1" complete="0" expand="true">
+            <depend id="6" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="6" uid="2121924dcd354860a36161dcf4e1d20a" name="Saisie dans la base de données et correction" meeting="false" start="2024-10-08" duration="22" complete="0" expand="true">
+            <depend id="7" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="7" uid="1dc43bc4edfa4511ab1089c4ae676c0b" name="Création de la page d’accueil" meeting="false" start="2024-11-07" duration="2" complete="0" expand="true">
+            <depend id="8" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="8" uid="4277bc61594a4aa4accb851748fc47ab" name="Création de la page catégorie" meeting="false" start="2024-11-11" duration="6" complete="0" expand="true">
+            <depend id="9" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="9" uid="790695f0645744099cd49e0e26681bea" name="Création de la barre de filtrage" meeting="false" start="2024-11-19" duration="5" complete="0" expand="true">
+            <depend id="10" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="10" uid="66027c2b67b74ed9819944553e660e22" name="Création de la page de contact" meeting="false" start="2024-11-26" duration="3" complete="0" expand="true">
+            <depend id="11" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="11" uid="0679b0103bc642cc97d2d7b3ce78a8ab" name="Création des pages de connexion" meeting="false" start="2024-11-29" duration="4" complete="0" expand="true">
+            <depend id="12" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="12" uid="e3c30c5f8ff64692bb90b88e239ffb79" name="Création de la page &quot;About Us&quot;" meeting="false" start="2024-12-05" duration="1" complete="0" expand="true">
+            <depend id="13" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="13" uid="483795dea5ce4f4eb1fd4055725a5208" name="Documentations et rédaction" meeting="false" start="2024-12-06" duration="6" complete="0" expand="true">
+            <depend id="14" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="14" uid="f004c667e4084d0c864f23d9c88345c9" name="Test du site web" meeting="false" start="2024-12-16" duration="3" complete="0" expand="true"/>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
