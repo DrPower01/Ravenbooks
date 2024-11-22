@@ -12,10 +12,37 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Query to get books
-$sql = "SELECT id, title, authors, cover_url FROM Books"; // Adjust field names as per your database structure
-$result = $conn->query($sql);
 ?>
+<?php
+session_start(); // Start the session
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    // User is not logged in
+    $loginMessage = "You are not logged in. Please <a href='login.php'>log in</a>.";
+} else {
+    // User is logged in
+    $user_name = $_SESSION['user_name']; // Retrieve user's name from session
+    $firstLetter = strtoupper($user_name[0]); // Extract and capitalize the first letter
+    
+    
+}
+$stmt = $conn->prepare("SELECT id, email, password, name, role FROM users WHERE email = ?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$stmt->store_result();
+$stmt->bind_result($id, $db_email, $db_password, $db_name, $db_role);
+$stmt->fetch();
+
+if (password_verify($password, $db_password)) {
+    $_SESSION['user_id'] = $id;
+    $_SESSION['user_name'] = $db_name;
+    $_SESSION['user_email'] = $db_email;
+    $_SESSION['user_role'] = $db_role;
+}
+
+?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,6 +59,9 @@ $result = $conn->query($sql);
     box-sizing: border-box;
     list-style: none;
     font-family: "Times New Roman", sans-serif;
+}
+.nav a, .menu a {
+    text-decoration: none;
 }
 
 .nav {
@@ -213,8 +243,8 @@ p {
 
 .book_grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr); /* 6 books horizontally */
-    grid-template-rows: repeat(2, 1fr); /* 2 rows vertically */
+    grid-template-columns: repeat(20, 1fr); /* 6 books horizontally */
+    grid-template-rows: repeat(1, 1fr); /* 2 rows vertically */
     gap: 20px; /* Space between books */
     padding: 20px;
 }
@@ -459,6 +489,32 @@ h1 {
         grid-template-columns: repeat(2, 1fr); /* Adjust grid for smaller screens */
     }
 }
+.book-cover-container {
+    position: relative;
+    display: inline-block;
+}
+
+.book-cover-container img {
+    display: block;
+    width: 100%; /* Adjust as needed */
+    height: auto;
+}
+
+.tag {
+    position: absolute;
+    top: 10px; /* Adjust the position as needed */
+    left: 10px; /* Adjust the position as needed */
+    background-color: rgba(0, 102, 204, 0.8); /* Semi-transparent background */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.3s ease-in-out; /* Smooth transition for showing */
+}
+.book-cover-container:hover .tag {
+    opacity: 1; /* Show the tag when the book cover is hovered */
+}
 
 @media (max-width: 480px) {
     .book_grid {
@@ -473,15 +529,219 @@ h1 {
         font-size: 20px;
     }
 }
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Times New Roman", sans-serif;
+        }
+        .nav {
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .nav .left {
+            display: flex;
+            align-items: center;
+        }
+        .nav .left h1 {
+            font-size: 24px;
+            color: #333;
+            margin-left: 10px;
+        }
+        .nav .menu {
+            display: flex;
+            align-items: center;
+        }
+        .nav .menu a {
+            text-decoration: none;
+            color: #333;
+            margin: 0 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .nav .menu a:hover {
+            color: #007BFF;
+        }
+        .user-info-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .user-info {
+            width: 40px;
+            height: 40px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: transform 0.3s;
+        }
+        .user-info:hover {
+            transform: scale(1.1);
+        }
+        .logout {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: #FF4136;
+            color: white;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .user-info-container:hover .logout {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav .menu {
+                margin-top: 10px;
+                flex-wrap: wrap;
+            }
+            .nav .menu a {
+                margin: 5px 0;
+            }
+        }
+        .user-info .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 1000;
+}
 
+.user-info:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.dropdown-menu a i {
+    margin-right: 8px;
+}
+
+.dropdown-menu a:hover {
+    background: #f4f4f4;
+    color: #007bff;
+}
+.book_scroll_container {
+        display: flex; /* Arrange the books in a horizontal row */
+        overflow-x: scroll; /* Enable horizontal scrolling */
+        padding: 10px;
+        gap: 15px; /* Add some space between the books */
+    }
+
+    .book_scroll_container::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .book_scroll_container::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 4px;
+    }
+
+    .book_scroll_container::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
+    /* Individual Book Item */
+    .book {
+        width: 180px; /* Set a fixed width for each book */
+        flex-shrink: 0; /* Prevent the books from shrinking */
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        padding: 10px;
+        overflow: hidden;
+    }
+
+    .book-cover-container {
+        position: relative;
+        width: 100%;
+        height: 250px; /* Set a height for the book cover */
+        overflow: hidden;
+    }
+
+    .book-cover-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensures the image covers the area */
+    }
+
+    .book-title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .book-author {
+        font-size: 14px;
+        color: #777;
+    }
+
+    .tag {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        padding: 5px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
     </style>
 </head>
 <body>
+    <!-- Navigation bar -->
+    <div class="nav">
+        <h1>Raven Books</h1>
+        <div class="user-info-container">
+            <div class="user-info">
+                <?php echo $firstLetter; ?>
+                <div class="dropdown-menu">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-heart"></i> Wishlist</a>
+                        <a href="#"><i class="fas fa-user-friends"></i> Following</a>
+                        <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+            </div>
+            <?php if(isset($loginMessage)) { echo $loginMessage; } ?>
+        </div>
+    </div>
+
     <div class="wrapper">
         <div class="nav">
             <div class="left">
                 <div class="header">
-                    <h1>Raven Books</h1>
+                    
                 </div>
                 <div class="menu_wrap pb">
                     <div class="title">
@@ -491,26 +751,26 @@ h1 {
                         <ul>
                             <li>
                                 <div class="li_wrap">
-                                    <div class="icon"><i class="fa-solid fa-house" aria-hidden="true"></i></div>
+                                    <div class="icon"><i class="fa-solid fa-book-atlas"></i></div>
                                     <div class="text">Discover</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="li_wrap">
-                                    <div class="icon"><i class="fa-solid fa-house" aria-hidden="true"></i></div>
-                                    <div class="text">Universite de Balballa</div>
+                                    <div class="icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                                    <a href="UnivB.php"><div class="text">Universite de Balballa</div></a>
                                 </div>
                             </li>
                             <li>
                                 <div class="li_wrap">
                                     <div class="icon"><i class="fa-solid fa-house" aria-hidden="true"></i></div>
-                                    <div class="text">Institut Francais</div>
+                                    <a href="IF.php"><div class="text">Institut Francais</div></a>
                                 </div>
                             </li>
                             <li>
                                 <div class="li_wrap">
                                     <div class="icon"><i class="fa-solid fa-house" aria-hidden="true"></i></div>
-                                    <div class="text">American Corn</div>
+                                    <a href="AC.php"><div class="text">American Corn</div></a>
                                 </div>
                             </li>
                             <li>
@@ -537,7 +797,7 @@ h1 {
                                     <div class="text">About us</div>
                                 </div>
                             </li><br>
-                            <hr>
+                            
                             <br><br>
                             <li>
                                 <div class="li_wrap">
@@ -558,7 +818,7 @@ h1 {
                                 </div>
                             </li>
                         </ul><br>
-                        <hr>
+                       
                     </div>
                     <div class="img_holder">
                         <img src="ab5.webp" alt="picture">
@@ -569,93 +829,84 @@ h1 {
                 <div class="background">
                     <div class="search-container">
                         <h2>Discover</h2>
+                        <a href="AdvanceBooksADD.php">add</a>
                         <div class="search-bar">
                             <select class="category-select">
                                 <option value="all-categories">All Categories</option>
-                                <!-- More categories can be added -->
                             </select>
                             <input type="text" class="search-input" placeholder="Find the book you love...">
                             <button class="search-button">Search</button>
                         </div>
                     </div>
                 </div>
-                <div class="search-container">
-                    <p>Navigation:</p>
-                    <div class="book_grid">
-                    <?php
-                        if ($result->num_rows > 0) {
-                            // Output data of each book
-                            while ($row = $result->fetch_assoc()) {
-                                echo '<div class="book">';
-                                // Create a link wrapping the book
-                                echo '<a href="book_details.php?id=' . htmlspecialchars($row["id"]) . '" class="book-link">';
-                                echo '<img src="' . htmlspecialchars($row["cover_url"]) . '" alt="Book cover">';
-                                echo '<div class="book-title">' . htmlspecialchars($row["title"]) . '</div>';
-                                echo '<div class="book-author">by ' . htmlspecialchars($row["authors"]) . '</div>';
-                                echo '</a>';
-                                echo '</div>';
+                <p>Most viewed:</p>
+                <div class="book_scroll_container">
+                            <?php
+                            // Recommended books query
+                            $sql1 = "SELECT Books.id, Books.title, Books.authors, Books.publisher, Books.cover_url, Books.description, Books.Faculte, COUNT(views.id) AS view_count
+                                        FROM Books
+                                        LEFT JOIN views ON Books.id = views.book_id
+                                        GROUP BY Books.id
+                                        ORDER BY view_count DESC
+                                        LIMIT 10";
+                            $result1 = $conn->query($sql1);
+
+                            if ($result1->num_rows > 0) {
+                                while ($row = $result1->fetch_assoc()) {
+                                    echo '<div class="book">';
+                                    echo '<a href="book_details.php?id=' . htmlspecialchars($row["id"]) . '" class="book-link">';
+                                    echo '<div class="book-cover-container">';
+                                    if (!empty($row["cover_url"])) {
+                                        echo '<img src="' . htmlspecialchars($row["cover_url"]) . '" alt="Book cover" onerror="this.onerror=null; this.src=\'placeholder_icon.png\';">';
+                                    } else {
+                                        echo '<img src="placeholder_icon.png" alt="No cover available">';
+                                    }
+                                    echo '<div class="tag">' . htmlspecialchars($row["Faculte"]) . '</div>';
+                                    echo '</div>';
+                                    echo '<div class="book-title">' . htmlspecialchars($row["title"]) . '</div>';
+                                    echo '<div class="book-author">by ' . htmlspecialchars($row["authors"]) . '</div>';
+                                    echo '</a>';
+                                    echo '</div>';
+                                }
+                            } else {
+                                echo '<p>No recommended books found.</p>';
                             }
-                        } else {
-                            echo '<p>No books found.</p>';
-                        }
-                        $conn->close();
-                        ?>
-                    </div>
-                    <!-- Pagination -->
-                    <div class="pagination">
-                        <button class="prev">Previous</button>
-                        <span class="page-number">1</span>
-                        <button class="next">Next</button>
+                            ?>
+                        </div><br><br>
+                            <p>Lastest:</p>
+                        <div class="book_scroll_container">
+                            <?php
+                            // Newest books query
+                            $sql2 = "SELECT * FROM Books ORDER BY id DESC LIMIT 10";
+                            $result2 = $conn->query($sql2);
+
+                            if ($result2->num_rows > 0) {
+                                while ($row = $result2->fetch_assoc()) {
+                                    echo '<div class="book">';
+                                    echo '<a href="book_details.php?id=' . htmlspecialchars($row["id"]) . '" class="book-link">';
+                                    echo '<div class="book-cover-container">';
+                                    if (!empty($row["cover_url"])) {
+                                        echo '<img src="' . htmlspecialchars($row["cover_url"]) . '" alt="Book cover" onerror="this.onerror=null; this.src=\'placeholder_icon.png\';">';
+                                    } else {
+                                        echo '<img src="placeholder_icon.png" alt="No cover available">';
+                                    }
+                                    echo '<div class="tag">' . htmlspecialchars($row["Faculte"]) . '</div>';
+                                    echo '</div>';
+                                    echo '<div class="book-title">' . htmlspecialchars($row["title"]) . '</div>';
+                                    echo '<div class="book-author">by ' . htmlspecialchars($row["authors"]) . '</div>';
+                                    echo '</a>';
+                                    echo '</div>';
+                                }
+                            } else {
+                                echo '<p>No newest books found.</p>';
+                            }
+                            ?>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-            let currentPage = 1;
-        const booksPerPage = 12; // 6 books per row * 2 rows = 12 books per page
-
-        const books = document.querySelectorAll('.book');
-        const totalBooks = books.length; // Get the total number of books
-
-        // Calculate total pages dynamically
-        const totalPages = Math.ceil(totalBooks / booksPerPage);
-
-        // Function to show the books for the current page
-        function showPage(page) {
-            const startIndex = (page - 1) * booksPerPage;
-            const endIndex = startIndex + booksPerPage;
-            
-            books.forEach((book, index) => {
-                if (index >= startIndex && index < endIndex) {
-                    book.style.display = 'block';
-                } else {
-                    book.style.display = 'none';
-                }
-            });
-
-            // Update page number
-            document.querySelector('.page-number').textContent = page;
-        }
-
-        // Pagination event listeners
-        document.querySelector('.next').addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                showPage(currentPage);
-            }
-        });
-
-        document.querySelector('.prev').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                showPage(currentPage);
-            }
-        });
-
-        // Initial load
-        showPage(currentPage);
-
-    </script>
+    
 </body>
 </html>
