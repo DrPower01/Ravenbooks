@@ -8,7 +8,7 @@ $email=$_POST["email"];
 $password=$_POST["password"];
 $sql="INSERT INTO inscription VALUES ('$email','$password')";
 if(mysqli_query($sum,$sql)){
-    echo header("location:index.html");
+    echo header("location:connexion.html");
 }
 
 ?> 
