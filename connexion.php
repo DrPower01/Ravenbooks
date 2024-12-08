@@ -3,7 +3,7 @@
 session_start();
 
 // Database connection
-$conn = new mysqli('localhost', 'root', 'nigga', 'library'); // Update with your database details
+$conn = new mysqli('localhost', 'root', '', 'connexions'); // Update with your database details
 
 // Check connection
 if ($conn->connect_error) {
