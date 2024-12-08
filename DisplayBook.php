@@ -212,7 +212,7 @@ $totalPages = ceil($totalBooks / $booksPerPage);
                 while ($row = $result->fetch_assoc()) {
                     echo '<div class="col">';
                     echo '<div class="card h-100">';
-                    echo '<a href="book_details.php?id=' . htmlspecialchars($row["id"]) . '" class="text-decoration-none">';
+                    echo '<a href="Booksdetail.php?id=' . htmlspecialchars($row["id"]) . '" class="text-decoration-none">';
                     echo '<div class="book-cover-container text-center">';
                     
                     if (!empty($row["cover_url"])) {
