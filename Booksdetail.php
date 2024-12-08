@@ -1,16 +1,6 @@
 <?php
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "nigga";
-$dbname = "library";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Include the database connection file
+include 'db.php';
 
 // Get the book ID from the URL
 $book_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
