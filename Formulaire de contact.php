@@ -143,10 +143,10 @@
         <label for="subject">Sujet :</label>
         <select id="subject" name="subject" required>
             <option value="" disabled selected>Choisissez un sujet</option>
-            <option value="support">Support Technique</option>
-            <option value="feedback">Retour d'expérience</option>
-            <option value="inquiry">Renseignements</option>
-            <option value="other">Autre</option>
+            <option value="Support Technique">Support Technique</option>
+            <option value="Retour d expérience">Retour d'expérience</option>
+            <option value="Renseignements">Renseignements</option>
+            <option value="Autre">Autre</option>
         </select>
 
         <label for="message">Message :</label>

@@ -15,9 +15,11 @@ if ($co->connect_error) {
 // Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Vérifier que les champs obligatoires sont définis
-    if (isset($_POST["name"], $_POST["email"], $_POST["message"])) {
+    if (isset($_POST["name"], $_POST["email"], $_POST["phone"], $_POST["subject"], $_POST["message"])) {
         $name = htmlspecialchars(trim($_POST["name"])); // Nettoyage de l'entrée
         $email = htmlspecialchars(trim($_POST["email"]));
+        $phone = htmlspecialchars(trim($_POST["phone"]));
+        $subject = htmlspecialchars(trim($_POST["subject"]));
         $message = htmlspecialchars(trim($_POST["message"]));
 
         // Validation supplémentaire (email valide)
@@ -27,8 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Préparer une requête SQL pour éviter les injections SQL
-        $sql = $co->prepare("INSERT INTO contact (name, email, message) VALUES (?, ?, ?)");
-        $sql->bind_param("sss", $name, $email, $message);
+        $sql = $co->prepare("INSERT INTO contact (name, email, phone, subject, message) VALUES (?, ?, ?, ?, ?)");
+        $sql->bind_param("sssss", $name, $email, $phone, $subject, $message);
 
         if ($sql->execute()) {
             echo "Merci pour votre message !";
