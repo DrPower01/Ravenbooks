@@ -89,10 +89,19 @@
             <h2>Modifier un Livre</h2>
             <label for="update_isbn">Entrez l'ISBN du livre à modifier :</label>
             <input type="text" id="update_isbn" name="update_isbn" required>
+            
             <label for="new_title">Nouveau Titre :</label>
             <input type="text" id="new_title" name="new_title" required>
+            
             <label for="new_authors">Nouvel Auteur :</label>
             <input type="text" id="new_authors" name="new_authors" required>
+
+            <label for="new_description">Nouvelle Description :</label>
+            <input type="text" id="new_description" name="new_description" required>
+
+            <label for="new_publishedDate">Nouvelle Date de Publication :</label>
+            <input type="text" id="new_publishedDate" name="new_publishedDate" required>
+            
             <button type="submit" name="update_submit">Modifier le Livre</button>
         </form>
     </div>
@@ -117,6 +126,8 @@
         $updateIsbn = $_POST['update_isbn'];
         $newTitle = $_POST['new_title'];
         $newAuthors = $_POST['new_authors'];
+        $newDescription = $_POST['new_description'];
+        $newPublishedDate = $_POST['new_publishedDate'];
 
         // Prepare SQL query to check if the book exists
         $checkSql = "SELECT * FROM Books WHERE isbn = ?";
@@ -128,9 +139,9 @@
         // If the book exists, proceed to update
         if ($checkResult->num_rows > 0) {
             // Prepare SQL query to update the book
-            $updateSql = "UPDATE Books SET title = ?, authors = ? WHERE isbn = ?";
+            $updateSql = "UPDATE Books SET title = ?, authors = ?, description = ?, publishedDate = ? WHERE isbn = ?";
             $updateStmt = $conn->prepare($updateSql);
-            $updateStmt->bind_param("sss", $newTitle, $newAuthors, $updateIsbn);
+            $updateStmt->bind_param("sssss", $newTitle, $newAuthors, $newDescription, $newPublishedDate, $updateIsbn);
 
             if ($updateStmt->execute()) {
                 echo "<div style='color: green;'>Le livre avec l'ISBN $updateIsbn a été modifié avec succès.</div>";
