@@ -5,20 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>À propos</title>
     <style>
-        * {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            color: #333;
-            line-height: 1.6;
-            overflow-x: hidden;
-            background: linear-gradient(to bottom, #f0f4f8, #d9e8ff);
-        }
-        /* Navbar */
         nav {
             background: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -27,85 +19,23 @@
             top: 0;
             z-index: 1000;
         }
-
         nav ul {
             display: flex;
             list-style: none;
             justify-content: center;
         }
-
         nav ul li {
             margin: 0 1rem;
             position: relative;
         }
-
         nav ul li a {
             text-decoration: none;
             color: #333;
             font-weight: bold;
             transition: color 0.3s;
         }
-
         nav ul li a:hover {
             color: #3a6186;
-        }
-
-        /* Dropdown menu styles */
-        .drop-down {
-            position: absolute;
-            top: 100%; /* Position juste en dessous du lien parent */
-            left: 0;
-            padding: 0.5rem 0;
-            margin: 0;
-            background: linear-gradient(to right, #dce1e6, #fce7e7);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 0.5rem;
-            font-size: 12px;
-            list-style: none;
-            display: none;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-
-        .drop-down li {
-            padding: 0.5rem 1rem;
-            white-space: nowrap;
-        }
-
-        .drop-down li i {
-            margin-right: 0.5rem;
-            vertical-align: middle;
-        }
-
-        .drop-down li:hover {
-            background: black;
-            color: #fff;
-            border-radius: 0.5rem;
-        }
-
-        /* Show dropdown on hover */
-        .lieu:hover .drop-down {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .lieu a {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .lieu .dropdown-icon {
-            margin-left: 0.5rem;
-            font-size: 14px;
-            transform: rotate(0deg);
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .lieu:hover .dropdown-icon {
-            transform: rotate(180deg);
         }
         /* Section */
         .hero {
@@ -178,26 +108,7 @@
 </head>
 <body>
      <!-- Navbar -->
-     <nav>
-        <ul>
-            <li><a href="gr1.html">Home</a></li>
-            <li><a href="features.html">Catalog</a></li>
-            <li class="lieu">
-                <a href="#">Lieu
-                    <span class="material-icons dropdown-icon">
-                        <i class="fa-solid fa-caret-down"></i>
-                    </span>
-                </a>
-                <ul class="drop-down">
-                    <li><i class="fa-solid fa-graduation-cap"></i> Université de Balbal</li>
-                    <li><i class="fa-brands fa-squarespace"></i> Institut Nationale</li>
-                    <li><i class="fa-solid fa-building-columns"></i> Archives Nationales</li>
-                </ul>
-            </li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
+     <?php include('navbar.php'); ?>
 
     <!-- Premier texte à gauche -->
     <section class="hero">
