@@ -1,23 +1,14 @@
 <?php
 // Connexion à la base de données
-$host = 'localhost';
-$dbname = 'library';
-$username = 'root';
-$password = '';
+include 'db.php';
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erreur de connexion : " . $e->getMessage());
-}
 
 // Récupération de la lettre depuis la requête GET
 $letter = $_GET['letter'] ?? '';
 $letter = htmlspecialchars($letter);
 
 // Préparer la requête SQL
-$query = "SELECT id, title FROM books WHERE title LIKE :letter ORDER BY title";
+$query = "SELECT id, title FROM Books WHERE title LIKE :letter ORDER BY title";
 $stmt = $pdo->prepare($query);
 $stmt->execute(['letter' => $letter . '%']);
 

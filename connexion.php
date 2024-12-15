@@ -2,13 +2,8 @@
 // Start the session
 session_start();
 
-// Database connection
-$conn = new mysqli('localhost', 'root', '', 'connexions'); // Update with your database details
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Include the database connection file
+include 'db.php';
 
 // Handle login form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
