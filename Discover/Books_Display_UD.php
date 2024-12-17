@@ -8,6 +8,9 @@ $booksPerPage = isset($_GET['booksPerPage']) ? intval($_GET['booksPerPage']) : 1
 // Get the current page from GET parameters, default is 1
 $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
+// Get the selected letter (navigation by letter)
+$selectedLetter = isset($_GET['letter']) ? $_GET['letter'] : null;
+
 // Calculate the offset for the SQL query
 $offset = ($currentPage - 1) * $booksPerPage;
 
@@ -15,11 +18,16 @@ $offset = ($currentPage - 1) * $booksPerPage;
 $filterValue = isset($_GET['categories']) ? $_GET['categories'] : 'all';
 
 // Default query to fetch books with pagination
-$sql = "SELECT id, title, authors, cover_url, categories FROM Books";
+$sql = "SELECT id, title, authors, cover_url, categories FROM Books WHERE 1=1";
 
 // Apply filter based on selected categories
 if ($filterValue !== 'all') {
-    $sql .= " WHERE categories = '" . $conn->real_escape_string($filterValue) . "'";
+    $sql .= " AND categories = '" . $conn->real_escape_string($filterValue) . "'";
+}
+
+// Apply filter based on selected letter
+if ($selectedLetter) {
+    $sql .= " AND title LIKE '" . $conn->real_escape_string($selectedLetter) . "%'";
 }
 
 // Apply pagination
@@ -28,9 +36,12 @@ $sql .= " ORDER BY id DESC LIMIT $offset, $booksPerPage";
 $result = $conn->query($sql);
 
 // Get total number of books for pagination
-$totalBooksQuery = "SELECT COUNT(*) as total FROM Books";
+$totalBooksQuery = "SELECT COUNT(*) as total FROM Books WHERE 1=1";
 if ($filterValue !== 'all') {
-    $totalBooksQuery .= " WHERE categories = '" . $conn->real_escape_string($filterValue) . "'";
+    $totalBooksQuery .= " AND categories = '" . $conn->real_escape_string($filterValue) . "'";
+}
+if ($selectedLetter) {
+    $totalBooksQuery .= " AND title LIKE '" . $conn->real_escape_string($selectedLetter) . "%'";
 }
 $totalBooksResult = $conn->query($totalBooksQuery);
 $totalBooks = $totalBooksResult->fetch_assoc()['total'];
@@ -48,17 +59,34 @@ $totalPages = ceil($totalBooks / $booksPerPage);
         .filter-container {
             margin-bottom: 20px;
         }
-        .filter-container label {
-            margin-right: 15px;
+        .alphabet-nav a {
+            margin: 5px;
+            padding: 8px 12px;
+            text-decoration: none;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            color: #007bff;
         }
-        .filter-container select {
-            width: 200px;
+        .alphabet-nav a.active, .alphabet-nav a:hover {
+            background-color: #007bff;
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="container mt-5">
         <h3>Universite Balballa</h3>
+
+        <!-- Alphabet Navigation -->
+        <div class="alphabet-nav d-flex flex-wrap justify-content-center mb-4">
+            <?php foreach (range('A', 'Z') as $letter): ?>
+                <?php $activeClass = ($selectedLetter === $letter) ? 'active' : ''; ?>
+                <a href="?letter=<?php echo $letter; ?>&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>" class="<?php echo $activeClass; ?>">
+                    <?php echo $letter; ?>
+                </a>
+            <?php endforeach; ?>
+            <a href="?letter=&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>" class="<?php echo is_null($selectedLetter) ? 'active' : ''; ?>">All</a>
+        </div>
 
         <!-- Filter Dropdown -->
         <div class="filter-container">
@@ -76,21 +104,6 @@ $totalPages = ceil($totalBooks / $booksPerPage);
                 }
                 ?>
             </select>
-        </div>
-
-        <!-- Books Per Page and Pagination Section -->
-        <div class="row mb-4 align-items-center">
-            <div class="col-md-6">
-                <label for="booksPerPageSelect" class="form-label">Books Per Page</label>
-                <select id="booksPerPageSelect" class="form-select" onchange="updateBooksPerPage()">
-                    <option value="6" <?php if ($booksPerPage == 6) echo 'selected'; ?>>6</option>
-                    <option value="12" <?php if ($booksPerPage == 12) echo 'selected'; ?>>12</option>
-                    <option value="24" <?php if ($booksPerPage == 24) echo 'selected'; ?>>24</option>
-                    <option value="48" <?php if ($booksPerPage == 48) echo 'selected'; ?>>48</option>
-                </select>
-            </div>
-
-            
         </div>
 
         <!-- Book Grid -->
@@ -117,25 +130,23 @@ $totalPages = ceil($totalBooks / $booksPerPage);
                     echo '</div>';
                 }
             } else {
-                echo '<p>No books found for the selected category.</p>';
+                echo '<p>No books found for the selected category or letter.</p>';
             }
             ?>
         </div>
-        <div class="col-md-6 text-end">
-                <!-- Pagination -->
-                <div class="pagination" style="display: flex; align-items: center; gap: 10px;">
-                    <?php if ($currentPage > 1): ?>
-                        <a href="?page=<?php echo $currentPage - 1; ?>&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>" class="btn btn-primary" style="margin-right: 10px;">Previous</a>
-                    <?php endif; ?>
 
-                    <span style="margin: 0 10px;">Page <?php echo $currentPage; ?> of <?php echo $totalPages; ?></span>
+        <!-- Pagination -->
+        <div class="text-center mt-4">
+            <?php if ($currentPage > 1): ?>
+                <a href="?page=<?php echo $currentPage - 1; ?>&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>&letter=<?php echo $selectedLetter; ?>" class="btn btn-primary">Previous</a>
+            <?php endif; ?>
 
-                    <?php if ($currentPage < $totalPages): ?>
-                        <a href="?page=<?php echo $currentPage + 1; ?>&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>" class="btn btn-primary" style="margin-left: 10px;">Next</a>
-                    <?php endif; ?>
-                </div>
+            <span>Page <?php echo $currentPage; ?> of <?php echo $totalPages; ?></span>
 
-            </div>
+            <?php if ($currentPage < $totalPages): ?>
+                <a href="?page=<?php echo $currentPage + 1; ?>&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>&letter=<?php echo $selectedLetter; ?>" class="btn btn-primary">Next</a>
+            <?php endif; ?>
+        </div>
     </div>
 
     <script>
@@ -144,15 +155,7 @@ $totalPages = ceil($totalBooks / $booksPerPage);
             const categories = document.getElementById('categoriesSelect').value;
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set('categories', categories);
-            urlParams.set('page', 1); // Reset to page 1 when category changes
-            window.location.search = urlParams.toString();
-        }
-
-        function updateBooksPerPage() {
-            const booksPerPage = document.getElementById('booksPerPageSelect').value;
-            const urlParams = new URLSearchParams(window.location.search);
-            urlParams.set('booksPerPage', booksPerPage);
-            urlParams.set('page', 1); // Reset to page 1 when books per page changes
+            urlParams.set('page', 1);
             window.location.search = urlParams.toString();
         }
     </script>

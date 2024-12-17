@@ -57,7 +57,7 @@ include('Check_Admin.php');
 <?php include 'sidebar.php';?>
 
 <div class="main-content">
-    <h1 class="text-center">Modification par ISBN</h1>
+    <h1 class="text-center">Modification par ID</h1>
     <!-- Tabs Navigation -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">

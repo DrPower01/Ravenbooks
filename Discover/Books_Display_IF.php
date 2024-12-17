@@ -24,11 +24,26 @@ $sectionResult = $conn->query($sectionQuery);
 // Get selected section for filtering
 $selected_section = isset($_GET['section']) ? $_GET['section'] : '';
 
-// Query to fetch book details with pagination and optional section filtering
-$sql = "SELECT ID, Titre, Auteur_principal, ISBN, couverture, Section FROM Books_IF WHERE Section LIKE '%$selected_section%' LIMIT $books_per_page OFFSET $offset";
-$result = $conn->query($sql);
+// Get selected letter for filtering
+$selected_letter = isset($_GET['letter']) ? $_GET['letter'] : '';
 
+// Modify SQL to filter by letter and section
+$where_conditions = [];
+if (!empty($selected_section)) {
+    $where_conditions[] = "Section LIKE '%" . $conn->real_escape_string($selected_section) . "%'";
+}
+if (!empty($selected_letter)) {
+    $where_conditions[] = "Titre LIKE '" . $conn->real_escape_string($selected_letter) . "%'";
+}
+
+// Combine conditions
+$where_sql = !empty($where_conditions) ? "WHERE " . implode(" AND ", $where_conditions) : "";
+
+// Query to fetch book details with pagination and optional filters
+$sql = "SELECT ID, Titre, Auteur_principal, ISBN, couverture, Section FROM Books_IF $where_sql LIMIT $books_per_page OFFSET $offset";
+$result = $conn->query($sql);
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -82,11 +97,32 @@ $result = $conn->query($sql);
             font-weight: bold;
             margin: 0 15px;
         }
+
+        .alphabet-nav .btn {
+            margin: 0 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h3>Institut Francais</h3>
+
+        <!-- Alphabet Navigation -->
+        <div class="container mb-4">
+            <div class="row justify-content-center alphabet-nav">
+                <?php foreach (range('A', 'Z') as $letter): ?>
+                    <?php 
+                    $active_letter = isset($_GET['letter']) && $_GET['letter'] == $letter ? 'btn-primary' : 'btn-outline-success'; 
+                    ?>
+                    <div class="col-auto my-1">
+                        <a href="?letter=<?= $letter ?>&section=<?= urlencode($selected_section) ?>&books_per_page=<?= $books_per_page ?>" class="btn <?= $active_letter ?>"><?= $letter ?></a>
+                    </div>
+                <?php endforeach; ?>
+                <div class="col-auto my-1">
+                    <a href="?" class="btn btn-outline-danger">All</a>
+                </div>
+            </div>
+        </div>
 
         <!-- Filter by Section -->
         <form method="get" action="" class="form-inline mb-3">
@@ -132,7 +168,7 @@ $result = $conn->query($sql);
 
         <!-- Pagination controls -->
         <?php 
-        $sql_count = "SELECT COUNT(*) as total_books FROM Books_IF WHERE Section LIKE '%$selected_section%'";
+        $sql_count = "SELECT COUNT(*) as total_books FROM Books_IF $where_sql";
         $result_count = $conn->query($sql_count);
         $total_books = $result_count->fetch_assoc()['total_books'];
         $total_pages = ceil($total_books / $books_per_page);
@@ -151,13 +187,13 @@ $result = $conn->query($sql);
 
         <div class="pagination text-center">
             <?php if ($page > 1): ?>
-                <a href="?page=<?php echo ($page - 1); ?>&books_per_page=<?php echo $books_per_page; ?>&section=<?php echo $selected_section; ?>" class="btn btn-primary mr-2">Previous</a>
+                <a href="?page=<?php echo ($page - 1); ?>&books_per_page=<?php echo $books_per_page; ?>&section=<?php echo $selected_section; ?>&letter=<?php echo $selected_letter; ?>" class="btn btn-primary mr-2">Previous</a>
             <?php endif; ?>
 
             <span class="current-page">Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
 
             <?php if ($page < $total_pages): ?>
-                <a href="?page=<?php echo ($page + 1); ?>&books_per_page=<?php echo $books_per_page; ?>&section=<?php echo $selected_section; ?>" class="btn btn-primary ml-2">Next</a>
+                <a href="?page=<?php echo ($page + 1); ?>&books_per_page=<?php echo $books_per_page; ?>&section=<?php echo $selected_section; ?>&letter=<?php echo $selected_letter; ?>" class="btn btn-primary ml-2">Next</a>
             <?php endif; ?>
         </div>
 
