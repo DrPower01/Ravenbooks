@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    
+    <title>Supprimer un Livre</title>
     <style>
-        /* Your existing styles */
+        /* Styles existants */
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
@@ -89,49 +88,53 @@
     <div class="form-container">
         <!-- Form for deleting a book -->
         <form method="post" class="isbn-form">
-            <label for="delete_isbn">Enter ISBN to Delete:</label>
+            <label for="delete_isbn">Entrez l'ISBN du livre à supprimer :</label>
             <input type="text" id="delete_isbn" name="delete_isbn" required>
-            <button type="submit" name="delete_submit">Delete Book</button>
+            <button type="submit" name="delete_submit">Supprimer le livre</button>
         </form>
     </div>
 
     <?php
-    // Database connection
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+    
+    // Connexion à la base de données
     $servername = "localhost";
     $username = "root";
-    $password = "";
+    $password = "nigga";
     $dbname = "library";
 
     $conn = new mysqli($servername, $username, $password, $dbname);
 
-    // Check connection
+    // Vérifier la connexion
     if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+        die("Échec de la connexion : " . $conn->connect_error);
     }
 
-    // Check if the form has been submitted for deletion
+    // Vérifier si le formulaire a été soumis
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
         $deleteIsbn = $_POST['delete_isbn'];
         
-        // Prepare SQL query to delete the book
-        $deleteSql = "DELETE FROM Books WHERE isbn = ?";
+        // Préparer la requête SQL pour supprimer le livre par ISBN
+        $deleteSql = "DELETE FROM Books_IF WHERE ISBN = ?";
         $deleteStmt = $conn->prepare($deleteSql);
-        $deleteStmt->bind_param("s", $deleteIsbn);
+        $deleteStmt->bind_param("s", $deleteIsbn); // Use 's' for string (ISBN is a string)
         
         if ($deleteStmt->execute()) {
             if ($deleteStmt->affected_rows > 0) {
-                echo "<div style='color: green;'>Book with ISBN $deleteIsbn has been deleted from the database.</div>";
+                echo "<div style='color: green;'>Le livre avec l'ISBN $deleteIsbn a été supprimé de la base de données.</div>";
             } else {
-                echo "<div style='color: red;'>No book found with ISBN $deleteIsbn.</div>";
+                echo "<div style='color: red;'>Aucun livre trouvé avec l'ISBN $deleteIsbn.</div>";
             }
         } else {
-            echo "<div style='color: red;'>Error deleting book: " . $deleteStmt->error . "</div>";
+            echo "<div style='color: red;'>Erreur lors de la suppression du livre : " . $deleteStmt->error . "</div>";
         }
 
         $deleteStmt->close();
     }
 
-    // Close database connection
+    // Fermer la connexion à la base de données
     $conn->close();
     ?>
 </body>
