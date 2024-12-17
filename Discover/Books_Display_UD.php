@@ -123,15 +123,18 @@ $totalPages = ceil($totalBooks / $booksPerPage);
         </div>
         <div class="col-md-6 text-end">
                 <!-- Pagination -->
-                <div class="pagination">
+                <div class="pagination" style="display: flex; align-items: center; gap: 10px;">
                     <?php if ($currentPage > 1): ?>
-                        <a href="?page=<?php echo $currentPage - 1; ?>&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>" class="btn btn-primary">Previous</a>
+                        <a href="?page=<?php echo $currentPage - 1; ?>&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>" class="btn btn-primary" style="margin-right: 10px;">Previous</a>
                     <?php endif; ?>
-                    <span>Page <?php echo $currentPage; ?> of <?php echo $totalPages; ?></span>
+
+                    <span style="margin: 0 10px;">Page <?php echo $currentPage; ?> of <?php echo $totalPages; ?></span>
+
                     <?php if ($currentPage < $totalPages): ?>
-                        <a href="?page=<?php echo $currentPage + 1; ?>&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>" class="btn btn-primary">Next</a>
+                        <a href="?page=<?php echo $currentPage + 1; ?>&booksPerPage=<?php echo $booksPerPage; ?>&categories=<?php echo $filterValue; ?>" class="btn btn-primary" style="margin-left: 10px;">Next</a>
                     <?php endif; ?>
                 </div>
+
             </div>
     </div>
 

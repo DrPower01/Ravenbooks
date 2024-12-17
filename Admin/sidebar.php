@@ -56,6 +56,7 @@
         <a href="Modifie_ID_general.php"> ID</a>
         <a href="Modifie_ISBN_general.php">Via ISBN</a>
     </div>
+    <a href="messages.php">Contacts</a>
     <a href="logout.php">Logout</a>
 </div>
 

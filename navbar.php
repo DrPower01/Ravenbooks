@@ -203,7 +203,7 @@ if (isset($_SESSION['user_id'])) {
         <p><Strong>Role: </Strong> <?= htmlspecialchars($userRole) ?></p>
     <?php endif; ?>
     <a href="liked.php" class="btn btn-danger btn-primary"><i class="fas fa-heart"></i> Liked Books</a>
-    <a href="logout.php" class="btn btn-danger btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <a href="Deconnexion.php" class="btn btn-danger btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
 </div>
 
 <script>

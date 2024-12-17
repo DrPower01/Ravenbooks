@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Password matches, start session
             $_SESSION['user_id'] = $user_id;
             $_SESSION['username'] = $username;
-            header("Location: Sidebar.php"); // Redirect to a protected page
+            header("Location: Home.php"); // Redirect to a protected page
             exit();
         } else {
             $error = "Invalid password.";
