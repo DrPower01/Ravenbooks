@@ -81,7 +81,6 @@
     </style>
 </head>
 <body>
-    <?php include('navbar.php'); ?>
 
     <div class="form-container">
         <form method="post" class="book-form">

@@ -1,9 +1,18 @@
+<?php 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
+<?php include('navbar.php'); ?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Library</title>
+    <title>RavenBooks</title>
     <style>
         * {
             margin: 0;
@@ -16,11 +25,11 @@
             color: #333;
             line-height: 1.6;
             overflow-x: hidden;
-            background: linear-gradient(to bottom, #f0f4f8, #d9e8ff);
+            background: linear-gradient(to bottom, #830CFA, #d9e8ff);
         }
 
         header {
-            background: linear-gradient(to right, #3a6186, #89253e);
+            background: linear-gradient(to right, #830CFA, #7286F7);
             color: white;
             padding: 4rem 2rem;
             text-align: center;
@@ -145,60 +154,155 @@
             color: #ff6f61;
             text-decoration: none;
         }
+        .search-bar {
+            margin-top: 4rem;
+            text-align: center;
+        }
 
-        nav {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        .search-bar input {
+            padding: 1rem;
+            width: 70%;
+            max-width: 500px;
+            border: 2px solid #ff6f61;
+            border-radius: 50px;
+            font-size: 1rem;
+        }
+
+        .search-bar button {
             padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            justify-content: center;
-        }
-
-        nav ul li {
-            margin: 0 1rem;
-        }
-
-        nav ul li a {
-            text-decoration: none;
-            color: #333;
+            background: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 50px;
             font-weight: bold;
-            transition: color 0.3s;
+            cursor: pointer;
+            margin-left: -50px;
         }
 
-        nav ul li a:hover {
-            color: #3a6186;
+        .search-bar button:hover {
+            background: #bb1264;
         }
+
+        /* Search container styles for the input box and results */
+        .search-container {
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .search-container input {
+            padding: 1rem;
+            width: 70%;
+            max-width: 500px;
+            border: 2px solid #ff6f61;
+            border-radius: 50px;
+            font-size: 1rem;
+        }
+
+        .search-container .list-group {
+            margin-top: 1rem;
+            width: 70%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            max-height: 300px; /* Limit the height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border-radius: 10px;
+        }
+
+        .list-group-item {
+            cursor: pointer;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .list-group-item img {
+            width: 50px;
+            height: 75px;
+            margin-right: 10px;
+        }
+
+        .list-group-item:hover {
+            background-color: #ff6f61;
+            color: white;
+        }
+        
     </style>
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="gr1.html">Home</a></li>
-            <li><a href="features.html">Catalog</a></li>
-            <li><a href="lieu.html">Lieu</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
+    
 
     <header>
         <h1>Explore Infinite Knowledge</h1>
         <p>Your gateway to a world of books, stories, and learning.</p>
-        <a href="features.html" class="btn-primary">Discover Now</a>
+        <a href="Affichages.php" class="btn-primary">Discover Now</a>
         
     </header>
 
     <section class="search-bar">
-        <input type="text" placeholder="Search for books, genres, or authors...">
-        <button>Search</button>
-    </section>
+    <div class="container">
+        <div class="search-container">
+            <input
+                type="text"
+                class="form-control"
+                placeholder="Search books by title, author, or ISBN..."
+                id="searchBox"
+            />
+            <ul class="list-group search-results" id="searchResults"></ul>
+        </div>
+    </div>
+</section>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById('searchBox').addEventListener('input', function () {
+        const query = this.value.trim();
+        const resultsContainer = document.getElementById('searchResults');
+
+        // Clear previous results if query is empty
+        if (query === '') {
+            resultsContainer.innerHTML = '';
+            return;
+        }
+
+        // Perform AJAX request
+        fetch(`search.php?query=${encodeURIComponent(query)}`)
+            .then((response) => response.json())
+            .then((data) => {
+                resultsContainer.innerHTML = '';
+
+                if (data.length === 0) {
+                    resultsContainer.innerHTML =
+                        '<li class="list-group-item no-results">No books found</li>';
+                    return;
+                }
+
+                // Populate results
+                data.forEach((book) => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex align-items-center';
+                    li.innerHTML = `
+                        <img src="${book.cover_url}" alt="${book.title}">
+                        <div>
+                            <strong>${book.title}</strong><br>
+                            <span class="text-muted">${book.authors}</span>
+                        </div>
+                    `;
+                    li.addEventListener('click', () => {
+                        window.location.href = `Booksdetail.php?id=${book.id}`;
+                    });
+                    resultsContainer.appendChild(li);
+                });
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    });
+</script>
 
     <section class="features" id="features">
         <div class="feature-box">

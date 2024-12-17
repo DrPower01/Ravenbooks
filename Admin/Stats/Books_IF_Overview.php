@@ -1,5 +1,11 @@
 <?php
-include 'db.php';
+// Database connection
+$host = 'localhost';
+$dbname = 'library';
+$username = 'root';
+$password = 'nigga'; // Change this password as needed for security
+$dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
+
 try {
     $pdo = new PDO($dsn, $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -114,7 +120,6 @@ $bookVue = array_column($topBooks, 'Vue');
     </style>
 </head>
 <body>
-    <?php include 'sidebar.php'; ?>
 
     <div class="main-content">
         <h2>Books Information Overview</h2>

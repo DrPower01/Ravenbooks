@@ -1,8 +1,42 @@
+<?php
+// Include database connection
+include('db.php');
+session_start();
+
+
+// Check if the user is logged in
+$isLoggedIn = false;
+$userRole = 'guest';
+$userName = ''; // Initialize user name
+
+if (isset($_SESSION['user_id'])) {
+    $isLoggedIn = true;
+    $userId = $_SESSION['user_id'];
+
+    // Query the database to get the user's role and name
+    $query = "SELECT role, username, email FROM user WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $userRole = $row['role'];
+        $userName = $row['username']; // Fetch user name
+        $userEmail = $row['email'];
+    }
+
+    $stmt->close();
+}
+?>
+
 <head>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
+        /* Navbar Styling */
         nav {
-            background: white;
+            background: linear-gradient(to right, #B572F7, #830CFA); /* Gradient using the provided colors */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 1rem 2rem;
             position: sticky;
@@ -14,6 +48,8 @@
             display: flex;
             list-style: none;
             justify-content: center;
+            padding: 0;
+            margin: 0;
         }
 
         nav ul li {
@@ -23,146 +59,167 @@
 
         nav ul li a {
             text-decoration: none;
-            color: black; /* Set default color to white */
+            color: white; /* White text for better contrast against the colorful background */
             font-weight: bold;
-            transition: color 0.3s;
+            transition: color 0.3s ease, transform 0.3s ease;
         }
 
-        /* Add hover effect to turn text color to white */
         nav ul li a:hover {
-            color: white;
+            color: #f8f9fa; /* Light color on hover for contrast */
+            transform: scale(1.05);
         }
 
-        /* Dropdown menu styles */
-        .drop-down {
-            position: absolute;
-            top: 100%; /* Position juste en dessous du lien parent */
-            left: 0;
-            padding: 0.5rem 0;
-            margin: 0;
-            background: linear-gradient(to right, #dce1e6, #fce7e7);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 0.5rem;
-            font-size: 12px;
-            list-style: none;
-            display: none;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-
-        .drop-down li {
-            padding: 0.5rem 1rem;
-            white-space: nowrap;
-        }
-
-        .drop-down li i {
-            margin-right: 0.5rem;
-            vertical-align: middle;
-        }
-
-        /* Hover effect for dropdown items */
-        .drop-down li:hover {
-            background: black;
-            color: white;
-            border-radius: 0.5rem;
-        }
-
-        /* Show dropdown on hover */
-        .Lieux:hover .drop-down,
-        .Catalogue:hover .drop-down {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .Lieux a,
-        .Catalogue a {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: black; /* Set text color for links in dropdown to white */
-        }
-
-        .Lieux .dropdown-icon,
-        .Catalogue .dropdown-icon {
-            margin-left: 0.5rem;
-            font-size: 14px;
-            transform: rotate(0deg);
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .Lieux:hover .dropdown-icon,
-        .Catalogue:hover .dropdown-icon {
-            transform: rotate(180deg);
-        }
-
-        .btn-primary {
+        /* User Dropdown */
+        .user-dropdown {
+            position: relative;
             display: inline-block;
-            text-decoration: none;
-            background: #ff6f61;
-            color: white;
-            padding: 1rem 2.5rem;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            margin-left: auto;
         }
 
-        .btn-primary:hover {
-            background: #ff4a36;
-            transform: translateY(-2px);
+        .user-icon {
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            margin-right: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .user-icon:hover {
+            color: #ff6f61;
+        }
+
+        /* User Info Popup Styling */
+        .user-info-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            padding: 20px;
+            z-index: 2000;
+            display: none;
+        }
+
+        .user-info-popup.active {
+            display: block;
+        }
+
+        .user-info-popup h5 {
+            font-size: 1.5rem;
+            color: #007bff;
+        }
+
+        .user-info-popup p {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .user-info-popup .btn {
+            width: 100%;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .user-info-popup .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .user-info-popup .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .user-info-popup .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .user-info-popup .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* Close button for the popup */
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .close-popup:hover {
+            color: #333;
         }
     </style>
 </head>
 
 <!-- Navbar -->
 <nav>
+    
     <ul>
-        <li><a href="Home(unfinished).php">Home</a></li>
+        <li><a href="Home.php">Home</a></li>
 
-        <!-- Catalogue Dropdown -->
-        <li class="Catalogue">
-            <a href="#">Catalogue
-                <span class="material-icons dropdown-icon">
-                    <i class="fa-solid fa-caret-down"></i>
-                </span>
-            </a>
-            <ul class="drop-down">
-                <a href="filtrageParGenre.php"><li>Par genre</a></li>
-                <a href="filtrageParLettre.php"><li>Par lettre</a></li>
-            </ul>
+
+        <!-- Admin Panel Link for Admin Role -->
+        <?php if ($userRole === 'admin'): ?>
+            <li><a href="Admin/Books_Overview_general.php">Admin</a></li>
+        <?php endif; ?>
+
+        <!-- Other Pages -->
+        <li><a href="Affichages.php">Discover</a></li>
+        <li><a href="a-propos.php">About</a></li>
+        <li><a href="Formulaire de contact.php">Contact</a></li>
+
+        <!-- User Login/Dropdown -->
+        <li>
+            <div class="navbar">
+                <?php if (!$isLoggedIn): ?>
+                    <!-- Login Button -->
+                    <a href="connexion.php" class="btn-login">Login</a>
+                <?php else: ?>
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown">
+                        <i class="fas fa-user-circle user-icon" onclick="showUserInfo()"></i>
+                    </div>
+                <?php endif; ?>
+            </div>
         </li>
-
-        
-        <li class="Lieux">
-            <a href="#">Lieux
-                <span class="material-icons dropdown-icon">
-                    <i class="fa-solid fa-caret-down"></i>
-                </span>
-            </a>
-            <ul class="drop-down">
-                <li><i class="fa-solid fa-graduation-cap"></i> Université de Balbal</li>
-                <li><i class="fa-brands fa-squarespace"></i> Institut Nationale</li>
-                <li><i class="fa-solid fa-building-columns"></i> Archives Nationales</li>
-            </ul>
-        </li>
-
-        <li class="Lieux">
-            <a href="#">Admin
-                <span class="material-icons dropdown-icon">
-                    <i class="fa-solid fa-caret-down"></i>
-                </span>
-            </a>
-            <ul class="drop-down">
-                <li><a href=""><i class="fas fa-plus"></i> Ajouter un livre</a></li>
-                <li><a href=""><i class="fas fa-sync-alt"></i> Mise a jour</a></li>
-                <li><a href=""><i class="fas fa-edit"></i> Modification</a></li>
-                <li><a href=""><i class="fas fa-trash-alt"></i> Suppression</a></li>
-            </ul>
-        </li>
-
-        <li><a href="about.html">About</a></li>
-        <li><a href="contact.html">Contact</a></li>
     </ul>
 </nav>
+
+<!-- User Info Popup -->
+<div id="userInfoPopup" class="user-info-popup">
+    <span class="close-popup" onclick="closeUserInfoPopup()">&times;</span>
+    <h5>User Information</h5>
+    <p><strong>Username:</strong> <?= htmlspecialchars($userName) ?></p>
+    <p><strong>Email:</strong> <?= htmlspecialchars($userEmail) ?></p>
+    <?php if ($userRole === 'admin'): ?>
+        <p><Strong>Role: </Strong> <?= htmlspecialchars($userRole) ?></p>
+    <?php endif; ?>
+    <a href="liked.php" class="btn btn-danger btn-primary"><i class="fas fa-heart"></i> Liked Books</a>
+    <a href="logout.php" class="btn btn-danger btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<script>
+    // Toggle the menu visibility on mobile
+    function toggleMenu() {
+        const nav = document.querySelector('nav ul');
+        nav.classList.toggle('show');
+    }
+
+    // Show the user info popup
+    function showUserInfo() {
+        document.getElementById('userInfoPopup').classList.add('active');
+    }
+
+    // Close the user info popup
+    function closeUserInfoPopup() {
+        document.getElementById('userInfoPopup').classList.remove('active');
+    }
+</script>
