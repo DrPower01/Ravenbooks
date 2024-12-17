@@ -202,7 +202,7 @@ if (isset($_SESSION['user_id'])) {
     <?php if ($userRole === 'admin'): ?>
         <p><Strong>Role: </Strong> <?= htmlspecialchars($userRole) ?></p>
     <?php endif; ?>
-    <a href="Liked_general.php" class="btn btn-danger btn-primary"><i class="fas fa-heart"></i> Liked Books</a>
+    <a href="liked.php" class="btn btn-danger btn-primary"><i class="fas fa-heart"></i> Liked Books</a>
     <a href="Deconnexion.php" class="btn btn-danger btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
 </div>
 

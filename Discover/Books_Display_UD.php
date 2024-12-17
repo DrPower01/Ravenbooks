@@ -58,7 +58,7 @@ $totalPages = ceil($totalBooks / $booksPerPage);
 </head>
 <body>
     <div class="container mt-5">
-        <h3>Book Library</h3>
+        <h3>Universite Balballa</h3>
 
         <!-- Filter Dropdown -->
         <div class="filter-container">
@@ -100,12 +100,12 @@ $totalPages = ceil($totalBooks / $booksPerPage);
                 while ($row = $result->fetch_assoc()) {
                     echo '<div class="col">';
                     echo '<div class="card h-100">';
-                    echo '<a href="Booksdetail.php?id=' . htmlspecialchars($row["id"]) . '" class="text-decoration-none">';
+                    echo '<a href="Discover/Books_details_UD.php?id=' . htmlspecialchars($row["id"]) . '" class="text-decoration-none">';
                     echo '<div class="book-cover-container text-center">';
                     if (!empty($row["cover_url"])) {
                         echo '<img src="' . htmlspecialchars($row["cover_url"]) . '" alt="Book cover" class="card-img-top" onerror="this.onerror=null; this.src=\'placeholder_icon.png\';">';
                     } else {
-                        echo '<img src="placeholder_icon.png" alt="No cover available" class="card-img-top">';
+                        echo '<img src="https://via.placeholder.com/150x200?text=No+Cover" class="card-img-top">';
                     }
                     echo '</div>';
                     echo '<div class="card-body">';

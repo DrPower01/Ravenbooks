@@ -1,5 +1,7 @@
 <?php include('navbar.php'); 
-include('Check_Admin.php'); 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 ?>
 <!DOCTYPE html>
@@ -53,11 +55,10 @@ include('Check_Admin.php');
     }
 </style>
 <body>
-<?php include 'sidebar.php';?>
 
 <div class="main-content">
-    <h1 class="text-center">Stats</h1>
-    <!-- Tabs Navigation -->
+    <h3>Liked Books</h3>
+<!-- Tabs Navigation -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="UD-tab" data-bs-toggle="tab" data-bs-target="#UD" type="button" role="tab" aria-controls="UD">Universite de Balballa</button>
@@ -71,11 +72,11 @@ include('Check_Admin.php');
     <div class="tab-content" id="myTabContent">
         <!-- Tab 1 Content -->
         <div class="tab-pane fade p-3" id="UD" role="tabpanel" aria-labelledby="UD-tab">
-            <?php include 'Stats/Books_UD_Overview.php'; ?>
+            <?php include 'Like_UD.php'; ?>
         </div>
         <!-- Tab 2 Content -->
         <div class="tab-pane fade p-3" id="IF" role="tabpanel" aria-labelledby="IF-tab">
-            <?php require 'Stats/Books_IF_Overview.php'; ?>
+            <?php require 'Like_IF.php'; ?>
         </div>
     </div>
 </div>

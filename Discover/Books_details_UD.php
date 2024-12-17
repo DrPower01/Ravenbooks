@@ -2,7 +2,7 @@
 // Database connection
 $servername = "localhost";
 $username = "root";
-$password = "nigga";
+$password = "nigga"; // Please consider changing this to a more secure password
 $dbname = "library";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -22,6 +22,10 @@ if ($book_id > 0) {
 
     if ($result->num_rows > 0) {
         $book = $result->fetch_assoc();
+
+        // Increment the views count by 1
+        $updateViewsSql = "UPDATE Books SET views = views + 1 WHERE id = $book_id";
+        $conn->query($updateViewsSql); // Execute the update query
     } else {
         echo "Book not found.";
         exit;
@@ -41,7 +45,36 @@ if ($book_id > 0) {
     exit;
 }
 
+session_start(); // Start the session 
+$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
+
+// Handle wishlist action
+if ($user_id > 0) {
+    if (isset($_POST['add_to_wishlist'])) {
+        // Add book to wishlist
+        $wishlistSql = "INSERT INTO wishlist (user_id, book_id) VALUES ($user_id, $book_id)";
+        if ($conn->query($wishlistSql)) {
+            $wishlistStatus = "Book added to your wishlist.";
+        } else {
+            $wishlistStatus = "This book is already in your wishlist.";
+        }
+    } elseif (isset($_POST['remove_from_wishlist'])) {
+        // Remove book from wishlist
+        $wishlistSql = "DELETE FROM wishlist WHERE user_id = $user_id AND book_id = $book_id";
+        if ($conn->query($wishlistSql)) {
+            $wishlistStatus = "Book removed from your wishlist.";
+        } else {
+            $wishlistStatus = "Failed to remove book from wishlist.";
+        }
+    }
+}
+
+// Check if the book is already in the wishlist
+$wishlistCheckSql = "SELECT * FROM wishlist WHERE user_id = $user_id AND book_id = $book_id";
+$wishlistCheckResult = $conn->query($wishlistCheckSql);
+$isInWishlist = $wishlistCheckResult->num_rows > 0;
 ?>
+
 <?php session_start(); // Start the session 
     $_SESSION['user_id'];
 ?>
@@ -66,6 +99,11 @@ if ($book_id > 0) {
         }
         .wishlist-button:hover {
             background-color: #0056b3;
+        }
+        .wishlist-status {
+            color: green;
+            font-size: 18px;
+            margin-top: 10px;
         }
     </style>
     <style>
@@ -217,55 +255,69 @@ if ($book_id > 0) {
         }
     </style>
 </head>
-<body>
-    <?php include('navbar.php'); ?>
-
-    <div class="main-content">
-        <!-- Book Detail Section -->
-        <div class="book-detail-container">
-            <div class="book-detail-header">
-                <h1><?php echo htmlspecialchars($book['title']); ?></h1>
-            </div>
-            <div class="book-detail-body">
-                <div class="book-detail-image">
-                    <img src="<?php echo htmlspecialchars($book['cover_url']); ?>" alt="Book cover">
-                </div>
-                <div class="book-detail-info">
-                    <p><strong>Author:</strong> <?php echo htmlspecialchars($book['authors']); ?></p>
-                    <p><strong>Publisher:</strong> <?php echo htmlspecialchars($book['publisher']); ?></p>
-                    <p><strong>ISBN:</strong> <?php echo htmlspecialchars($book['isbn']); ?></p>
-                    <p><strong>Description:</strong> <?php echo htmlspecialchars($book['description']); ?></p>
-                    <p><strong>Localisation:</strong> <?php echo htmlspecialchars($book[' Localisation ']); ?></p>
-
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                        <!-- Wishlist Button -->
-                        <a href="add_to_wishlist.php?book_id=<?php echo $book_id; ?>" class="wishlist-button">Add to Wishlist</a>
-                    <?php else: ?>
-                        <p><em>Log in to add this book to your wishlist.</em></p>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-        <!-- Next Books Section -->
-        <div class="next-books-container">
-            <h2>Next Books</h2>
-            <?php if (!empty($nextBooks)): ?>
-                <ul class="next-books-list">
-                    <?php foreach ($nextBooks as $nextBook): ?>
-                        <li>
-                            <a href="Booksdetail.php?id=<?php echo $nextBook['id']; ?>">
-                                <img src="<?php echo htmlspecialchars($nextBook['cover_url']); ?>" alt="Book cover">
-                                <?php echo htmlspecialchars($nextBook['title']); ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php else: ?>
-                <p>No more books available.</p>
-            <?php endif; ?>
-        </div>
-    </div>
-</body>
-</html>
 
     
+
+<body>
+<?php include('navbar.php'); ?>
+
+<div class="main-content">
+    <!-- Book Detail Section -->
+    <div class="book-detail-container">
+        <div class="book-detail-header">
+            <h1><?php echo htmlspecialchars($book['title']); ?></h1>
+        </div>
+        <div class="book-detail-body">
+            <div class="book-detail-image">
+                <img src="<?php echo htmlspecialchars($book['cover_url']); ?>" alt="Book cover">
+            </div>
+            <div class="book-detail-info">
+                <p><strong>Author:</strong> <?php echo htmlspecialchars($book['authors']); ?></p>
+                <p><strong>Publisher:</strong> <?php echo htmlspecialchars($book['publisher']); ?></p>
+                <p><strong>ISBN:</strong> <?php echo htmlspecialchars($book['isbn']); ?></p>
+                <p><strong>Description:</strong> <?php echo htmlspecialchars($book['description']); ?></p>
+                <p><strong>Localisation:</strong> <?php echo htmlspecialchars($book['Localisation']); ?></p>
+
+                <?php if ($user_id > 0): ?>
+                    <!-- Display status message -->
+                    <?php if (isset($wishlistStatus)): ?>
+                        <p class="wishlist-status"><?php echo $wishlistStatus; ?></p>
+                    <?php endif; ?>
+
+                    <!-- Wishlist Button -->
+                    <?php if ($isInWishlist): ?>
+                        <form method="POST">
+                            <button type="submit" name="remove_from_wishlist" class="wishlist-button">Remove from Wishlist</button>
+                        </form>
+                    <?php else: ?>
+                        <form method="POST">
+                            <button type="submit" name="add_to_wishlist" class="wishlist-button">Add to Wishlist</button>
+                        </form>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <p><em>Log in to manage your wishlist.</em></p>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <!-- Next Books Section -->
+    <div class="next-books-container">
+        <h2>Next Books</h2>
+        <?php if (!empty($nextBooks)): ?>
+            <ul class="next-books-list">
+                <?php foreach ($nextBooks as $nextBook): ?>
+                    <li>
+                        <a href="Books_details_UD.php?id=<?php echo $nextBook['id']; ?>">
+                            <img src="<?php echo htmlspecialchars($nextBook['cover_url']); ?>" alt="Book cover">
+                            <?php echo htmlspecialchars($nextBook['title']); ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p>No more books available.</p>
+        <?php endif; ?>
+    </div>
+</div>
+</body>
+</html>

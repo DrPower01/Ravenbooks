@@ -1,4 +1,6 @@
 <?php
+include('Check_Admin.php'); 
+
 // Database connection
 $host = 'localhost';
 $dbname = 'library';

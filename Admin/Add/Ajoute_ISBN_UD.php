@@ -104,6 +104,8 @@
     </style>
 </div>
 <?php
+include('Check_Admin.php'); 
+
 // Database connection
 $servername = "localhost";
 $username = "root";

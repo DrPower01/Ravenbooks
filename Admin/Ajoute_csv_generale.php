@@ -1,3 +1,5 @@
+include('Check_Admin.php'); 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

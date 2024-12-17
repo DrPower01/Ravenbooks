@@ -1,4 +1,6 @@
 <?php
+include('Check_Admin.php'); 
+
 $server = "localhost";
 $username = "root";
 $password = "nigga";
