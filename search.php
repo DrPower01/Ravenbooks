@@ -1,53 +1,50 @@
 <?php
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 // Database connection
-$servername = "localhost";  // Replace with your DB server
-$username = "root";         // Replace with your DB username
-$password = "nigga";             // Replace with your DB password
-$dbname = "library";        // Replace with your database name
+$servername = "localhost";
+$username = "root";
+$password = "nigga";
+$dbname = "library";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check the connection
+// Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die(json_encode(["error" => "Database connection failed: " . $conn->connect_error]));
 }
 
-$query = isset($_GET['query']) ? $_GET['query'] : '';
+// Get the search query from the request
+$query = isset($_GET['query']) ? trim($_GET['query']) : '';
 
-// Prepare SQL to search both tables: Books and Books_IF
-$sql = "SELECT id, title, authors, cover_url FROM Books WHERE title LIKE ? OR authors LIKE ? 
-        UNION 
-        SELECT id, Titre, Auteur_principal, couverture FROM Books_IF WHERE Titre LIKE ? OR Auteur_principal LIKE ?";
+if (!empty($query)) {
+    // SQL query to search books by title, author, or ISBN
+    $sql = $conn->prepare("SELECT id, title, authors, cover_url FROM Books WHERE title LIKE ? OR authors LIKE ? OR ISBN LIKE ?");
+    $searchTerm = "%" . $query . "%";
+    $sql->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
 
-$stmt = $conn->prepare($sql);
-$searchTerm = "%" . $query . "%";
-$stmt->bind_param("ssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+    if ($sql->execute()) {
+        $result = $sql->get_result();
+        $books = [];
 
-$stmt->execute();
-$result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $books[] = [
+                "id" => $row["id"],
+                "title" => $row["title"],
+                "authors" => $row["authors"],
+                "cover_url" => $row["cover_url"] ?? "placeholder_icon.png"
+            ];
+        }
 
-// Fetch results and prepare response
-$books = [];
+        // Return the search results as JSON
+        echo json_encode($books);
+    } else {
+        echo json_encode(["error" => "Error executing query: " . $sql->error]);
+    }
 
-while ($row = $result->fetch_assoc()) {
-    $books[] = [
-        'id' => $row['id'],
-        'title' => $row['title'],
-        'authors' => $row['authors'],
-        'cover_url' => $row['cover_url']
-    ];
+    $sql->close();
+} else {
+    echo json_encode([]);
 }
 
-// Close connection
-$stmt->close();
 $conn->close();
-
-// Return results as JSON
-header('Content-Type: application/json');
-echo json_encode($books);
 ?>

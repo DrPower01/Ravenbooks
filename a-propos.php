@@ -117,7 +117,7 @@
             <p>Notre site de bibliothèque en ligne a pour objectif de faciliter la recherche et la localisation des livres. Grâce à une interface intuitive, les utilisateurs peuvent rapidement identifier l'emplacement des ouvrages disponibles, qu'ils soient dans des bibliothèques locales ou des espaces de prêt partenaires. Vous n'avez plus qu'à entrer le titre du livre pour obtenir sa disponibilité et son emplacement, tout cela en un clic.</p>
         </div>
         <div class="right">
-            <img src="cd.jpg" alt="Image bibliothèque">
+            <img src="Raven.jpeg" alt="Image bibliothèque">
         </div>
     </section>
 

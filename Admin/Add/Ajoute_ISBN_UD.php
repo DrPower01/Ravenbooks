@@ -6,101 +6,7 @@
         <button type="submit">Search</button>
     </form>
     <style>
-        * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Times New Roman", sans-serif;
-    }
-
-    .container {
-        width: 80%;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #f7f7f7;
-        border-radius: 15px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-        font-size: 28px;
-        margin-bottom: 20px;
-        color: #333;
-        text-align: center;
-    }
-
-    .book-details {
-        background: #ffffff;
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .book-cover {
-        display: block;
-        margin: 0 auto 20px;
-        max-width: 200px;
-        border-radius: 10px;
-    }
-
-    .book-details p {
-        font-size: 18px;
-        color: #444;
-        margin-bottom: 10px;
-    }
-
-    strong {
-        color: #333;
-    }
-
-    .isbn-form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        margin-bottom: 30px;
-        padding: 20px;
-        background-color: #ffffff;
-        border-radius: 15px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .isbn-form label {
-        font-size: 18px;
-        margin-bottom: 5px;
-        color: #333;
-    }
-
-    .isbn-form input {
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        font-size: 16px;
-    }
-
-    .isbn-form button,
-    .submit-button {
-        padding: 10px 20px;
-        background-color: #ff6f61;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .isbn-form button:hover,
-    .submit-button:hover {
-        background-color: #555;
-    }
-
-    .isbn-form input:focus,
-    .submit-button:focus {
-        outline: none;
-        border-color: #333;
-    }
-
+        /* Your existing CSS styles */
     </style>
 </div>
 <?php
@@ -162,6 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
         $categories = $_POST['categories'];
         $language = $_POST['language'];
         $coverUrl = $_POST['cover_url'];
+        $biblio = 'Institut_Francais'; // Default value
+        $localisation = $_POST['localisation'] ?? null; // Optional field
+        $views = 0; // Default value
+        $likes = 0; // Default value
 
         // Convert the published date to year only
         if ($publishedDate) {
@@ -169,8 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
         }
 
         // SQL query to insert the data into the database
-        $sql = "INSERT INTO Books (title, authors, publisher, publishedDate, description, pageCount, categories, language, isbn, cover_url)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO Books (title, authors, publisher, publishedDate, description, pageCount, categories, language, isbn, biblio, Localisation, cover_url, views, likes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
         if ($stmt === false) {
@@ -178,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
             exit;
         }
 
-        $stmt->bind_param("ssssssssss", $title, $authors, $publisher, $publishedDate, $description, $pageCount, $categories, $language, $isbn, $coverUrl);
+        $stmt->bind_param("ssssssssssssii", $title, $authors, $publisher, $publishedDate, $description, $pageCount, $categories, $language, $isbn, $biblio, $localisation, $coverUrl, $views, $likes);
 
         if ($stmt->execute()) {
             echo "Book inserted into the database with ISBN: $isbn\n";
@@ -236,7 +146,8 @@ if (isset($_GET['isbn'])) {
                 <input type='hidden' name='categories' value='$categories'>
                 <input type='hidden' name='language' value='$language'>
                 <input type='hidden' name='isbn' value='$isbn'>
-                <input type='hidden' name='coverUrl' value='$cover_url'>
+                <input type='hidden' name='cover_url' value='$coverUrl'>
+                <input type='hidden' name='localisation' value=''>
                 <button type='submit' name='submit' class='submit-button'>Add to Database</button>
               </form>";
         echo "</div>";
@@ -246,4 +157,3 @@ if (isset($_GET['isbn'])) {
 // Close database connection
 $conn->close();
 ?>
-

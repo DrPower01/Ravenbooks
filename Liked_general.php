@@ -1,7 +1,3 @@
-<?php include('navbar.php'); 
-
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,6 +49,7 @@
     }
 </style>
 <body>
+<?php include('navbar.php'); ?>
 
 <div class="main-content">
     <h3>Liked Books</h3>

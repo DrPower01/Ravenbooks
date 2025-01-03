@@ -60,22 +60,29 @@ include('Check_Admin.php');
     <!-- Tabs Navigation -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="UD-tab" data-bs-toggle="tab" data-bs-target="#UD" type="button" role="tab" aria-controls="UD">Universite de Balballa</button>
+            <button class="nav-link" id="Manuel-tab" data-bs-toggle="tab" data-bs-target="#Manuel" type="button" role="tab" aria-controls="Manuel">Manuel</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="IF-tab" data-bs-toggle="tab" data-bs-target="#IF" type="button" role="tab" aria-controls="IF">Institut Francais</button>
+            <button class="nav-link" id="ISBN-tab" data-bs-toggle="tab" data-bs-target="#ISBN" type="button" role="tab" aria-controls="ISBN">ISBN</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="CSV-tab" data-bs-toggle="tab" data-bs-target="#CSV" type="button" role="tab" aria-controls="CSV">CSV</button>
         </li>
     </ul>
 
     <!-- Tabs Content -->
     <div class="tab-content" id="myTabContent">
         <!-- Tab 1 Content -->
-        <div class="tab-pane fade p-3" id="UD" role="tabpanel" aria-labelledby="UD-tab">
-            <?php include 'Stats/Books_UD_Overview.php'; ?>
+        <div class="tab-pane fade p-3" id="Manuel" role="tabpanel" aria-labelledby="Manuel-tab">
+            <?php include 'Add/Ajoute_manuel.php'; ?>
         </div>
         <!-- Tab 2 Content -->
-        <div class="tab-pane fade p-3" id="IF" role="tabpanel" aria-labelledby="IF-tab">
-            <?php require 'Stats/Books_IF_Overview.php'; ?>
+        <div class="tab-pane fade p-3" id="ISBN" role="tabpanel" aria-labelledby="ISBN-tab">
+            <?php include 'Add/Ajoute_ISBN_UD.php'; ?>
+        </div>
+        <!-- Tab 3 Content -->
+        <div class="tab-pane fade p-3" id="CSV" role="tabpanel" aria-labelledby="CSV-tab">
+            <?php include 'Stats/Books_CSV_Overview.php'; ?>
         </div>
     </div>
 </div>

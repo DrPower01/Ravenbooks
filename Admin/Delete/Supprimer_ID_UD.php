@@ -83,7 +83,6 @@
 </head>
 <body>
     
-        <h2>Universite Balballa</h2>
     <div class="form-container">
         <!-- Form for deleting a book -->
         <form method="post" class="id-form">

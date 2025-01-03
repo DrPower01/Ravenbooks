@@ -17,7 +17,7 @@
         font-size: 18px;
         transition: background-color 0.3s ease;
     }
-    .sidebar a:hover {
+    .sidebar a:hover, .sidebar a.active {
         background-color: #575757;
     }
     .submenu {
@@ -27,36 +27,32 @@
         font-size: 16px;
         padding: 5px 30px; /* Submenu link padding */
     }
-    .submenu a:hover {
+    .submenu a:hover, .submenu a.active {
         background-color: #575757;
     }
 </style>
 
 <!-- sidebar.php -->
+<?php
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
+
 <div class="sidebar">
     <h2 style="text-align: center;">Dashboard</h2>
-    <a href="Redirect_Home.php">Home</a>
-    <a href="Books_Overview_general.php">Books Overview</a>
+    <a href="Redirect_Home.php" class="<?= $current_page == 'Redirect_Home.php' ? 'active' : '' ?>">Home</a>
+    <a href="Books_Overview_general.php" class="<?= $current_page == 'Books_Overview_general.php' ? 'active' : '' ?>">Books Overview</a>
     
     <!-- Submenu -->
-    <a href="#">Add Books</a>
-    <div class="submenu">
-        <a href="Ajoute_ISBN_generale.php">Via ISBN</a>
-        <a href="Ajoute_csv_generale.php">Via CSV</a>
-        <a href="Ajoute_manuel.php">Manually</a>
-    </div>
+    <a href="Ajoute.php" class="<?= $current_page == 'Ajoute.php' ? 'active' : '' ?>">Add Books</a>
     
-    <a href="#">Delete Books</a>
+    <a href="Supprime_ID_general.php" class="<?= $current_page == 'Supprime_ID_general.php' ? 'active' : '' ?>">Delete Books</a>
+
+    <a href="#" class="<?= $current_page == 'Modifie_ID_general.php' || $current_page == 'Modifie_ISBN_general.php' ? 'active' : '' ?>">Modify Books</a>
     <div class="submenu">
-        <a href="Supprime_ID_general.php"> ID</a>
-        <a href="Supprime_ISBN_general.php">Via ISBN</a>
+        <a href="Modifie_ID_general.php" class="<?= $current_page == 'Modifie_ID_general.php' ? 'active' : '' ?>"> ID</a>
+        <a href="Modifie_ISBN_general.php" class="<?= $current_page == 'Modifie_ISBN_general.php' ? 'active' : '' ?>">Via ISBN</a>
     </div>
-    <a href="#">Modify Books</a>
-    <div class="submenu">
-        <a href="Modifie_ID_general.php"> ID</a>
-        <a href="Modifie_ISBN_general.php">Via ISBN</a>
-    </div>
-    <a href="messages.php">Contacts</a>
+    <a href="messages.php" class="<?= $current_page == 'messages.php' ? 'active' : '' ?>">Contacts</a>
 
 </div>
 

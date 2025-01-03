@@ -3,7 +3,6 @@
 include('db.php');
 session_start();
 
-
 // Check if the user is logged in
 $isLoggedIn = false;
 $userRole = 'guest';
@@ -42,6 +41,9 @@ if (isset($_SESSION['user_id'])) {
             position: sticky;
             top: 0;
             z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         nav ul {
@@ -126,12 +128,12 @@ if (isset($_SESSION['user_id'])) {
         }
 
         .user-info-popup .btn-primary {
-            background-color: #007bff;
+            background-color: #5a2d82; /* Darker shade of purple */
             color: white;
         }
 
         .user-info-popup .btn-primary:hover {
-            background-color: #0056b3;
+            background-color: #4a236b; /* Even darker shade of purple */
         }
 
         .user-info-popup .btn-secondary {
@@ -156,54 +158,93 @@ if (isset($_SESSION['user_id'])) {
         .close-popup:hover {
             color: #333;
         }
+
+        /* Responsive Navbar */
+        .hamburger {
+            display: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                display: none;
+            }
+
+            nav ul.show {
+                display: flex;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .user-dropdown {
+                margin-left: 0;
+            }
+        }
+
+        /* Login Button Styling */
+        .btn-login {
+            background-color: #5a2d82; /* Darker shade of purple */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background-color: #4a236b; /* Even darker shade of purple */
+        }
     </style>
 </head>
 
 <!-- Navbar -->
 <nav>
-    
+    <div class="hamburger" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
     <ul>
-        <li><a href="Home.php">Home</a></li>
-
+        <li><a href="Home.php">Accueil</a></li>
 
         <!-- Admin Panel Link for Admin Role -->
         <?php if ($userRole === 'admin'): ?>
-            <li><a href="Admin/Books_Overview_general.php">Admin</a></li>
+            <li><a href="Admin/Stats/Books_Overview.php">Panneau d'administration</a></li>
         <?php endif; ?>
 
         <!-- Other Pages -->
         <li><a href="Affichages.php">Discover</a></li>
-        <li><a href="a-propos.php">About</a></li>
+        <li><a href="a-propos.php">À propos</a></li>
         <li><a href="Formulaire de contact.php">Contact</a></li>
-
-        <!-- User Login/Dropdown -->
-        <li>
-            <div class="navbar">
-                <?php if (!$isLoggedIn): ?>
-                    <!-- Login Button -->
-                    <a href="connexion.php" class="btn-login">Login</a>
-                <?php else: ?>
-                    <!-- User Dropdown -->
-                    <div class="user-dropdown">
-                        <i class="fas fa-user-circle user-icon" onclick="showUserInfo()"></i>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </li>
     </ul>
+    <div class="navbar">
+        <?php if (!$isLoggedIn): ?>
+            <!-- Login Button -->
+            <a href="connexion.php" class="btn-login">Connexion</a>
+        <?php else: ?>
+            <!-- User Dropdown -->
+            <div class="user-dropdown">
+                <i class="fas fa-user-circle user-icon" onclick="showUserInfo()"></i>
+            </div>
+        <?php endif; ?>
+    </div>
 </nav>
 
 <!-- User Info Popup -->
 <div id="userInfoPopup" class="user-info-popup">
     <span class="close-popup" onclick="closeUserInfoPopup()">&times;</span>
-    <h5>User Information</h5>
-    <p><strong>Username:</strong> <?= htmlspecialchars($userName) ?></p>
+    <h5>Informations de l'utilisateur</h5>
+    <p><strong>Nom d'utilisateur:</strong> <?= htmlspecialchars($userName) ?></p>
     <p><strong>Email:</strong> <?= htmlspecialchars($userEmail) ?></p>
     <?php if ($userRole === 'admin'): ?>
-        <p><Strong>Role: </Strong> <?= htmlspecialchars($userRole) ?></p>
+        <p><Strong>Rôle: </Strong> <?= htmlspecialchars($userRole) ?></p>
     <?php endif; ?>
-    <a href="Liked_general.php" class="btn btn-danger btn-primary"><i class="fas fa-heart"></i> Liked Books</a>
-    <a href="Deconnexion.php" class="btn btn-danger btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <a href="Liked_general.php" class="btn btn-danger btn-primary"><i class="fas fa-heart"></i> Livres aimés</a>
+    <a href="logout.php" class="btn btn-danger btn-primary"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
 </div>
 
 <script>

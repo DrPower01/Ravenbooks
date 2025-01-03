@@ -1,7 +1,9 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Database connection
 include 'db.php';
-
 
 // Initialize error and success messages
 $errors = [];
@@ -33,15 +35,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors[] = "Passwords do not match.";
     }
 
-    // Check if email or username already exists
-    $check_sql = "SELECT * FROM `user` WHERE `email` = ? OR `username` = ?";
-    $stmt = $mysqli->prepare($check_sql);
-    $stmt->bind_param("ss", $email, $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Verify email address using Hunter.io API
+    if (empty($errors)) {
+        $api_key = 'YOUR_HUNTERIO_API_KEY';
+        $url = "https://api.hunter.io/v2/email-verifier?email=$email&api_key=$api_key";
 
-    if ($result->num_rows > 0) {
-        $errors[] = "Username or email already exists.";
+        $response = file_get_contents($url);
+        $result = json_decode($response, true);
+
+        if (!$result['data']['result'] || $result['data']['result'] == 'undeliverable') {
+            $errors[] = "Email address is not valid.";
+        }
+    }
+
+    // Check if email or username already exists
+    if (empty($errors)) {
+        $check_sql = "SELECT * FROM `user` WHERE `email` = ? OR `username` = ?";
+        $stmt = $mysqli->prepare($check_sql);
+        $stmt->bind_param("ss", $email, $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $errors[] = "Username or email already exists.";
+        }
     }
 
     // If no errors, insert into database
@@ -59,110 +76,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .register-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-        }
-        .register-container h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .form-group button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .form-group button:hover {
-            background-color: #218838;
-        }
-        .error {
-            color: red;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        .success {
-            color: green;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-
-<div class="register-container">
-    <h2>Register</h2>
-    <?php if (!empty($errors)): ?>
-        <?php foreach ($errors as $error): ?>
-            <div class="error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endforeach; ?>
-    <?php endif; ?>
-
-    <?php if ($success): ?>
-        <div class="success"><?php echo $success; ?></div>
-    <?php endif; ?>
-
-    <form method="POST" action="">
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>">
-        </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
-        </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password">
-        </div>
-        <div class="form-group">
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password">
-        </div>
-        <div class="form-group">
-            <button type="submit">Register</button>
-        </div>
-    </form>
-</div>
-
-</body>
-</html>

@@ -60,14 +60,20 @@ error_reporting(E_ALL);
 <?php include 'sidebar.php';?>
 
 <div class="main-content">
-    <h1 class="text-center">Suppression par ID</h1>
+    <h1 class="text-center">Suppression</h1>
     <!-- Tabs Navigation -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="CSV-UD-tab" data-bs-toggle="tab" data-bs-target="#CSV-UD" type="button" role="tab" aria-controls="CSV-UD">Universite de Balballa</button>
+            <button class="nav-link" id="CSV-UD-tab" data-bs-toggle="tab" data-bs-target="#CSV-UD" type="button" role="tab" aria-controls="CSV-UD">ID</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="CSV_IF-tab" data-bs-toggle="tab" data-bs-target="#CSV_IF" type="button" role="tab" aria-controls="CSV_IF">Institut Francais</button>
+            <button class="nav-link" id="CSV_IF-tab" data-bs-toggle="tab" data-bs-target="#CSV_IF" type="button" role="tab" aria-controls="CSV_IF">ISBN</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="CSV_Doublant-tab" data-bs-toggle="tab" data-bs-target="#CSV_Doublant" type="button" role="tab" aria-controls="CSV_Doublant">Doublant</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="CSV_Multiples-tab" data-bs-toggle="tab" data-bs-target="#CSV_Multiples" type="button" role="tab" aria-controls="CSV_Multiples">Multiples</button>
         </li>
     </ul>
 
@@ -79,7 +85,15 @@ error_reporting(E_ALL);
         </div>
         <!-- Tab 2 Content -->
         <div class="tab-pane fade p-3" id="CSV_IF" role="tabpanel" aria-labelledby="CSV_IF-tab">
-            <?php require 'Delete/Supprime_ID_IF.php'; ?>
+            <?php require 'Delete/Supprime_ISBN_UD.php'; ?>
+        </div>
+        <!-- Tab 3 Content -->
+        <div class="tab-pane fade p-3" id="CSV_Doublant" role="tabpanel" aria-labelledby="CSV_Doublant-tab">
+            <?php require 'Delete/Supprime_Doublant.php'; ?>
+        </div>
+        <!-- Tab 4 Content -->
+        <div class="tab-pane fade p-3" id="CSV_Multiples" role="tabpanel" aria-labelledby="CSV_Multiples-tab">
+            <?php require 'Delete/Suppression_multiples.php'; ?>
         </div>
     </div>
 </div>
@@ -109,3 +123,5 @@ error_reporting(E_ALL);
         });
     });
 </script>
+</body>
+</html>
